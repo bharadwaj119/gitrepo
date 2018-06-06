@@ -1,0 +1,39 @@
+<div class="loading-indicator" *ngIf="!loaded">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="loaded">
+  <div *ngIf="!showDependency"> 
+      <mat-form-field class="example-full-width">
+          <input matInput placeholder="Search by user..." value="" #search (keydown.enter)="searchByUser(search.value)">
+        </mat-form-field>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+      <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef>Avatar </th>
+        <td mat-cell *matCellDef="let element">
+          <img [src]="element.avatarUrl"> </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDependencies(row)">
+
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
+  </div>
+  <div *ngIf="showDependency">
+    <app-repodependencies [repo]="repo"></app-repodependencies>
+    <button mat-raised-button color="warn"(click)="hideDependencies()">Go Back</button>
+  </div>
+</div>
