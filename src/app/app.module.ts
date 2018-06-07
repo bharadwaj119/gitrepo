@@ -47,7 +47,7 @@ export class AppModule {
 
     const auth = setContext((_, { headers }) => {
       // github token
-      const token = "1aa9dff3c1dc745d036d3a56ff13cf5f7c5d121c";
+      const token = "fa5e12329769e2049a1b22dd43337b522a910f84";
       // return the headers to the context so httpLink can read them
       // in this example we assume headers property exists
       // and it is an instance of HttpHeaders
