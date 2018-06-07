@@ -47,7 +47,7 @@ export class AppModule {
 
     const auth = setContext((_, { headers }) => {
       // github token
-      const token = "465ba7d0c4df7ef6bcf5342b4a72f5c93da666b7";
+      const token = "cea965a0575ed855a3461939413ce54b1480932e";
       // return the headers to the context so httpLink can read them
       // in this example we assume headers property exists
       // and it is an instance of HttpHeaders
@@ -70,5 +70,6 @@ export class AppModule {
       link: auth.concat(http),
       cache: new InMemoryCache()
     });
+	
   }
 }
