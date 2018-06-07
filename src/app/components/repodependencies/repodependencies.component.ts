@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { GithubRepoService } from "src/app/services/github-repo.service";
 import { Input } from "@angular/core";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
@@ -13,27 +14,26 @@ import { retry } from "async";
 export class RepodependenciesComponent implements OnInit {
   @Input() repo;
   dataSource: MatTableDataSource<any>;
-  displayedColumns = ["name", "version","vulnerable"];
+  displayedColumns = ["name", "version"];
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor() {}
+  loading=true;
+  constructor(private githubRepoService: GithubRepoService) {
+	  
+  }
 
   ngOnInit() {
-    console.log(this.repo);
-    let dependencies = [];
-    [].concat.apply([], this.repo.dependencies).forEach(element => {
-      const isVulnerable =
-        this.repo.vulnerabilities.filter(
-          t => t.packageName == element.packageName
-        ).length > 0;
-      dependencies.push({
-        packageName: element.packageName,
-        requirements: element.requirements,
-        isVulnerable: isVulnerable ? "Yes" : "No"
-      });
-    });
-
+	 let dependencies = [];
+	this.githubRepoService.getDependencies(this.repo).then((d)=>{
+		Object.keys(d).forEach(function(k){
+			dependencies.push({
+				packageName: k,
+				requirements: d[k],
+			});
+		});
+		this.loading=false;
+	}).catch(()=>this.loading=false);
+	
     this.dataSource = new MatTableDataSource(dependencies);
-
-    this.dataSource.paginator = this.paginator;
+	setTimeout(()=>this.dataSource.paginator = this.paginator)
   }
 }

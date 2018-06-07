@@ -2,12 +2,12 @@ import { Injectable } from "@angular/core";
 import { Apollo } from "apollo-angular";
 import gql from "graphql-tag";
 import "rxjs/add/operator/map";
-
+import {Http} from '@angular/http'
 @Injectable({
   providedIn: "root"
 })
 export class GithubRepoService {
-  constructor(private apollo: Apollo) {}
+  constructor(private apollo: Apollo,private http:Http) {}
 
   getRepoInfo(name?: string) {
     const QUERY = gql`
@@ -64,6 +64,7 @@ export class GithubRepoService {
   }
 
   searchByUser(userName){
+
     console.log(userName)
     const QUERY = gql`
     query QUERY {
@@ -117,5 +118,40 @@ export class GithubRepoService {
       console.log(repos);
       return repos;
     });
+  }
+
+  getAllPublicRepos(){
+	const url = "https://api.github.com/repositories"
+	return this.http.get(url).map(t=>t.json().map(this.mapToGitObj));
+  }
+  
+  getUserRepos(userName:string){
+	  if(!userName)
+	  {
+		  return this.getAllPublicRepos();
+	  }
+	const url = `https://api.github.com/users/${userName}/repos`
+	return this.http.get(url).map(t=>t.json().map(this.mapToGitObj));
+  }
+  
+  getDependencies(gitObj){
+	  return new Promise<any>((res,rej)=>{
+	  const url = `https://api.github.com/repos/${gitObj.userName}/${gitObj.name}/contents/package.json`
+	   this.http.get(url).map(t=>t.json()).subscribe((data)=>{
+			const contents = data.content.replace(/\n/g, "\n");
+			const packageObj = JSON.parse(atob(contents));
+			const dependencies = packageObj.dependencies;
+			res(dependencies)
+		},(err)=>rej())
+	  })
+  }
+  
+  mapToGitObj(obj){
+	  return {
+			name:obj.name,
+			avatarUrl:obj.owner.avatar_url,
+			userName:obj.owner.login
+		}
+	  
   }
 }

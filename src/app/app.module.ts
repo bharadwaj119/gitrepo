@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { HttpClientModule } from "@angular/common/http";
+import {HttpModule} from "@angular/http"
 import { ApolloModule, Apollo, APOLLO_OPTIONS } from "apollo-angular";
 import { HttpLinkModule, HttpLink } from "apollo-angular-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -15,7 +16,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
-
+import gql from 'graphql-tag';
 export function createApollo(httpLink: HttpLink) {
  
 }
@@ -31,7 +32,8 @@ export function createApollo(httpLink: HttpLink) {
     BrowserAnimationsModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatInputModule
+    MatInputModule,
+	HttpModule
   ],
   providers: [GithubRepoService, {
     provide: APOLLO_OPTIONS,
@@ -56,6 +58,7 @@ export class AppModule {
       } else {
         return {
           headers: {
+			  ...headers,
             // auth token
             Authorization: `Bearer ${token}`,
             // to get dependency manifest
@@ -71,5 +74,4 @@ export class AppModule {
       cache: new InMemoryCache()
     });
 	
-  }
-}
+}}

@@ -10,18 +10,19 @@ import { MatTableDataSource } from "@angular/material/table";
   styleUrls: ["./listofrepo.component.css"]
 })
 export class ListofrepoComponent implements OnInit {
-  displayedColumns = ["avatar", "name"];
+  displayedColumns = ["avatar", "name","username"];
   dataSource: MatTableDataSource<any>;
   loaded: boolean = false;
   showDependency = false;
   repo;
+  userName:string = ""
   constructor(private githubRepoService: GithubRepoService) {}
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   ngOnInit() {
-    this.githubRepoService.getRepoInfo().subscribe(data => {
+	  this.githubRepoService.getAllPublicRepos().subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
-      this.dataSource.paginator = this.paginator;
+	  setTimeout(()=>this.dataSource.paginator = this.paginator)
       this.loaded = true;
     });
   }
@@ -36,8 +37,9 @@ export class ListofrepoComponent implements OnInit {
   }
 
   searchByUser(userName) {
+	  this.userName =userName;
     this.githubRepoService
-      .searchByUser(userName)
+      .getUserRepos(this.userName)
       .subscribe(data => (this.dataSource.data = data));
   }
 }
